@@ -198,6 +198,23 @@ checkpoint store를 훑어 이 경로에 존재하는 **모든 (Event Hub × con
 
 `eh_diagnose`는 PostgreSQL 진단 도구(`pg_diagnose`)와 동일한 `category` + `severity` 스키마를 사용합니다.
 
+### 저장 방식
+
+`eh_diagnose`는 결과를 **표준출력(stdout)** 으로만 출력합니다(HTML·스냅샷 파일 없음).
+
+| 모드 | 내용 |
+|---|---|
+| `--format table` (기본) | 사람이 읽기 쉬운 텍스트 테이블 |
+| `--format json` | `checks[]` 스키마 JSON (SRE Agent / MCP 연동용) |
+
+- `--exit-code` 지정 시 CI용 종료코드 반환(critical=2, warning=1, 그 외 0)
+- 파일로 남기려면 리다이렉트하세요:
+  ```powershell
+  python eh_diagnose.py --resource-id <rid> --azure-auth --format json > result.json
+  ```
+
+> secret/PII/prompt-injection은 JSON 출력 시 자동 마스킹됩니다.
+
 ### Severity Levels
 
 | Severity | 의미 |
