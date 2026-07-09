@@ -1,0 +1,23 @@
+# eh_diagnose 의존성
+# 인증 도메인별로 정리. 선택(optional) 표시된 것은 없으면 해당 평면만
+# info로 skip되고 나머지 진단은 정상 동작한다 (선택적 import 가드).
+
+# ── 공통: Entra ID (control + metrics + checkpoint 평면 인증) ──────────────
+azure-identity>=1.15               # DefaultAzureCredential
+
+# ── 도메인 1: Control plane (ARM) — namespace / event hub 구성 조회 ────────
+azure-mgmt-eventhub>=11            # EventHubManagementClient (--azure-auth)
+
+# ── 도메인 2: Metrics plane (Azure Monitor) ───────────────────────────────
+# 2.x에서 metrics가 분리됨: MetricsClient는 azure-monitor-query가 아니라
+# azure-monitor-querymetrics(모듈 azure.monitor.querymetrics)에 있다.
+# 코드는 2.x-우선 / 1.x-폴백으로 자동 처리한다(_load_metrics_sdk).
+azure-monitor-querymetrics>=1       # MetricsClient (azure-monitor-query 2.x 계열)
+#  (1.x를 쓰면 위 대신) azure-monitor-query>=1.2,<2   # MetricsClient가 아직 여기 포함
+
+# ── 도메인 3: Data / runtime plane — 파티션 runtime 속성 (read-only) ───────
+azure-eventhub>=5.11              # EventHubProducerClient (--eh-auth entra|connstr)
+
+# ── 도메인 4 (선택): Checkpoint store — consumer lag 계산 ──────────────────
+azure-storage-blob>=12.16          # optional: --checkpoint-store 사용 시에만 필요
+azure-mgmt-storage>=21             # optional: 체크포인트 저장소 자동 탐색(--no-auto-checkpoint로 비활성)
