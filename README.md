@@ -200,16 +200,24 @@ checkpoint store를 훑어 이 경로에 존재하는 **모든 (Event Hub × con
 
 ### 저장 방식
 
-`eh_diagnose`는 결과를 **표준출력(stdout)** 으로만 출력합니다(HTML·스냅샷 파일 없음).
+`eh_diagnose`는 기본적으로 결과를 **표준출력(stdout)** 으로 출력하며, `--output <경로>`로 **파일 저장**도 가능합니다.
 
 | 모드 | 내용 |
 |---|---|
 | `--format table` (기본) | 사람이 읽기 쉬운 텍스트 테이블 |
 | `--format json` | `checks[]` 스키마 JSON (SRE Agent / MCP 연동용) |
+| `--format html` | 심각도 색상 배지 + 권장 조치가 포함된 HTML 리포트 |
+| `--output <경로>` | stdout 대신 지정 파일로 저장 (형식은 `--format`로 결정) |
 
 - `--exit-code` 지정 시 CI용 종료코드 반환(critical=2, warning=1, 그 외 0)
-- 파일로 남기려면 리다이렉트하세요:
+- 파일로 저장 예시:
   ```powershell
+  # HTML 리포트 파일
+  python eh_diagnose.py --resource-id <rid> --azure-auth --eh-auth entra `
+    --region koreacentral --event-hub telemetry-events --format html --output report.html
+
+  # JSON 파일 (--output 또는 리다이렉트)
+  python eh_diagnose.py --resource-id <rid> --azure-auth --format json --output result.json
   python eh_diagnose.py --resource-id <rid> --azure-auth --format json > result.json
   ```
 
