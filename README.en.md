@@ -200,16 +200,24 @@ The tool scans the checkpoint store and automatically finds **every (event hub Ã
 
 ### Saving
 
-`eh_diagnose` prints results to **stdout** only (no HTML/snapshot files).
+`eh_diagnose` prints results to **stdout** by default, and can also **save to a file** via `--output <path>`.
 
 | Mode | Content |
 |---|---|
 | `--format table` (default) | Human-readable text table |
 | `--format json` | `checks[]` schema JSON (for SRE Agent / MCP) |
+| `--format html` | HTML report with severity color badges + recommended actions |
+| `--output <path>` | Write to the given file instead of stdout (format set by `--format`) |
 
 - With `--exit-code`, returns a CI exit code (critical=2, warning=1, otherwise 0)
-- To persist to a file, redirect:
+- Save-to-file examples:
   ```powershell
+  # HTML report file
+  python eh_diagnose.py --resource-id <rid> --azure-auth --eh-auth entra `
+    --region koreacentral --event-hub telemetry-events --format html --output report.html
+
+  # JSON file (--output or redirect)
+  python eh_diagnose.py --resource-id <rid> --azure-auth --format json --output result.json
   python eh_diagnose.py --resource-id <rid> --azure-auth --format json > result.json
   ```
 
