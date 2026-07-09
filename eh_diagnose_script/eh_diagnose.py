@@ -1072,6 +1072,18 @@ def main(argv: Optional[list[str]] = None) -> int:
             report.add("consumer_lag", "info", "체크포인트 저장소 자동 탐색됨",
                        f"{note}. 이 저장소로 consumer lag를 자동 계산합니다.",
                        {"checkpoint_store": ckpt_store})
+        else:
+            report.add("consumer_lag", "info",
+                       "체크포인트 저장소 미탐색 — consumer lag 생략",
+                       f"{note}. 자동 탐색으로 체크포인트 저장소를 찾지 못해 "
+                       f"consumer lag를 계산하지 못했습니다.",
+                       {"auto_discovery": note},
+                       recommendation="정밀 consumer lag가 필요하면 체크포인트 "
+                                      "Blob 컨테이너 URL을 --checkpoint-store로 "
+                                      "직접 지정하거나(예: https://<storage>.blob."
+                                      "core.windows.net/<container>), 실행 주체에 "
+                                      "해당 스토리지의 Storage Blob Data Reader "
+                                      "권한을 부여한 뒤 다시 실행하세요.")
     if ckpt_store and runtime_by_hub:
         try:
             lag_list = collect_all_checkpoint_lag(
